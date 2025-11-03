@@ -75,37 +75,37 @@ div.stretchy-wrapper {
   display: inline-block;
   padding: 3px;
 }
+
 .right {
   transform: rotate(-45deg);
 }
+
 .left {
   transform: rotate(135deg);
 }
+
 .up {
   transform: rotate(-135deg);
 }
+
 .down {
   transform: rotate(45deg);
 }
-.color-key span {
-  font-weight: bold;
-  color: #222; /* dark gray for contrast */
-}
 
-/* Optional: uncomment or tweak these if you want it to stand out more */
-.color-key span {
-  /* text-decoration: underline; */     /* subtle underline */
-  /* background-color: #fff3cd; */      /* light highlight */
-  /* padding: 2px 4px; */
-  /* border-radius: 4px; */
-}
-
+/* === COLOR-CODING LABEL === */
 .color-key span {
   font-weight: 700;
-  color: #b30000; /* deep red — you can change it */
-  background-color: #ffe680; /* light yellow highlight */
+  color: #b30000; /* deep red */
+  background-color: #ffd700; /* gold highlight */
   padding: 4px 8px;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   letter-spacing: 0.5px;
+}
+
+.color-key select {
+  padding: 4px 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-left: 8px;
 }
