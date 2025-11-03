@@ -2,26 +2,73 @@
   font-family: Junction;
   src: url("../fonts/junction-regular/Junction.otf") format("opentype");
 }
-body {
-  background: #f2f2f2;
-  font-family: Junction, sans;
-  text-align: center;
-}
-/* Aspect ratio based on https://stackoverflow.com/a/10441480 */
-#mynetwork {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
 
-  background-image: url("../resources/thetachiflagmodified.jpg");
-  background-size: 100%;
-  border: 1px solid lightgrey;
+/* === PAGE BACKGROUND === */
+body {
+  background-image: url("https://th.bing.com/th/id/R.01ccb29ad3cacb095d9a0a65b8d60cf5?rik=As%2b%2bTSAajfAbfA&riu=http%3a%2f%2fstacysgotgreek.com%2fwordpress%2fwp-content%2fuploads%2fPhi-Kappa-Tau-Flag.jpg&ehk=fFeOb4qoFDmeKag2CYyOUmeZ7tPq%2fJU7Ogx%2bCf0t41w%3d&risl=&pid=ImgRaw&r=0");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: Junction, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  color: #000;
 }
+
+/* === HEADER AND CONTROLS === */
+h1 {
+  margin-top: 20px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+select, input, button {
+  font-family: Junction, sans-serif;
+  font-size: 16px;
+  padding: 6px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  cursor: pointer;
+  background-color: #990000;
+  color: white;
+  border: none;
+}
+
+button:hover {
+  background-color: #b30000;
+}
+
+/* === NETWORK CONTAINER === */
 div.stretchy-wrapper {
   width: 100%;
-  padding-bottom: 66%; /* 3:2, the flag's aspect ratio */
+  padding-bottom: 70%; /* keeps aspect ratio */
   position: relative;
+  margin-top: 20px;
 }
 
+#network-container {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid lightgrey;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  height: 90%;
+  margin: auto;
+}
+
+#mynetwork {
+  width: 100%;
+  height: 100%;
+}
+
+/* === ARROWS === */
 .arrow {
   border: solid black;
   border-width: 0px 3px 3px 0px;
@@ -30,17 +77,35 @@ div.stretchy-wrapper {
 }
 .right {
   transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
 }
 .left {
   transform: rotate(135deg);
-  -webkit-transform: rotate(135deg);
 }
 .up {
   transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
 }
 .down {
   transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
+}
+.color-key span {
+  font-weight: bold;
+  color: #222; /* dark gray for contrast */
+}
+
+/* Optional: uncomment or tweak these if you want it to stand out more */
+.color-key span {
+  /* text-decoration: underline; */     /* subtle underline */
+  /* background-color: #fff3cd; */      /* light highlight */
+  /* padding: 2px 4px; */
+  /* border-radius: 4px; */
+}
+
+.color-key span {
+  font-weight: 700;
+  color: #b30000; /* deep red — you can change it */
+  background-color: #ffe680; /* light yellow highlight */
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  letter-spacing: 0.5px;
 }

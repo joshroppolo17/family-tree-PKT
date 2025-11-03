@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Phi Kappa Tau</title>
+  <title>Phi Kappa Tau Family Tree</title>
   <link rel="icon" type="image/ico" href="favicon.ico"/>
   <!-- Responsive design on mobile -->
   <meta content="width=device-width" name="viewport"/>
@@ -10,7 +10,7 @@
   <script type="text/javascript" src="lib/vis.min.js"></script>
   <script type="text/javascript" src="lib/tinycolor.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="relations.js"></script>
+  <script type="text/javascript" src="relations.js?v=2"></script>
   <script type="text/javascript" src="main.js"></script>
   <link href="lib/vis.min.css" rel="stylesheet" type="text/css" />
   <link href="css/main.css" rel="stylesheet" type="text/css" />
@@ -18,7 +18,7 @@
 
 <body>
 <h1>Phi Kappa Tau</h1>
-<p>Color-coding:
+<p class="color-key"><span>Color-coding:</span>
 <select id="layout">
   <option value="family">family</option>
   <option value="pledgeClass">pledge class</option>
@@ -33,9 +33,10 @@
 <br/>
 
 <div class="stretchy-wrapper">
-<div id="mynetwork"></div>
+  <div id="network-container">
+    <div id="mynetwork"></div>
+  </div>
 </div>
-
 <p id="selection"></p>
 </body>
 </html>
