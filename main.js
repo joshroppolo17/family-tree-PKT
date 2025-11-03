@@ -1,28 +1,17 @@
 /* global vis, tinycolor, brothers, $, didYouMean */
 
-// Mock out dependencies for testing on NodeJS. These are imported in HTML in
-// the browser.
+// Mock out dependencies for testing on NodeJS. These are imported in the browser.
 /* eslint-disable */
 /* istanbul ignore else */
-if (typeof brothers === 'undefined') {
-  brothers = require('./relations');
-}
+if (typeof brothers === 'undefined') { brothers = require('./relations'); }
 /* istanbul ignore else */
-if (typeof tinycolor === 'undefined') {
-  tinycolor = require('tinycolor2');
-}
+if (typeof tinycolor === 'undefined') { tinycolor = require('tinycolor2'); }
 /* istanbul ignore else */
-if (typeof $ === 'undefined') {
-  $ = require('jquery');
-}
+if (typeof $ === 'undefined') { $ = require('jquery'); }
 /* istanbul ignore else */
-if (typeof vis === 'undefined') {
-  vis = require('vis');
-}
+if (typeof vis === 'undefined') { vis = require('vis'); }
 /* istanbul ignore else */
-if (typeof didYouMean === 'undefined') {
-  didYouMean = require('didyoumean');
-}
+if (typeof didYouMean === 'undefined') { didYouMean = require('didyoumean'); }
 /* eslint-enable */
 
 var network = null;
@@ -33,11 +22,7 @@ var nodesDataSet;
 var edgesDataSet;
 var previousSearchFind;
 
-var DIRECTION = {
-  FORWARD: 0,
-  BACKWARD: 1,
-};
-
+var DIRECTION = { FORWARD: 0, BACKWARD: 1 };
 var KEYCODE_ENTER = 13;
 var familyColorGlobal = {};
 var pledgeClassColorGlobal = {};
@@ -53,22 +38,17 @@ ColorSpinner.prototype.spin = function () {
 
 var getNewFamilyColor = (function () {
   var spinner1 = new ColorSpinner({ h: 0, s: 0.6, v: 0.9 }, 77);
-  return function () {
-    return spinner1.spin();
-  };
+  return function () { return spinner1.spin(); };
 }());
 
 var getNewPledgeClassColor = (function () {
   var spinner2 = new ColorSpinner({ h: 0, s: 0.4, v: 0.9 }, 23);
-  return function () {
-    return spinner2.spin();
-  };
+  return function () { return spinner2.spin(); };
 }());
 
 function didYouMeanWrapper(invalidName) {
   var allValidNames = brothers.map(function (bro) { return bro.name; });
-  var similarValidName = didYouMean(invalidName, allValidNames);
-  return similarValidName;
+  return didYouMean(invalidName, allValidNames);
 }
 
 function createNodes(brothers_) {
@@ -93,7 +73,7 @@ function createNodes(brothers_) {
         label: bro.familystarted,
         family: lowerCaseFamily,
         inactive: true,
-        font: { size: 50 },
+        font: { size: 50 }
       };
       familyToNode[lowerCaseFamily] = newNode;
       nodes.push(newNode);
@@ -105,12 +85,12 @@ function createNodes(brothers_) {
         id: newIdx++,
         name: '',
         label: '[' + bro.name + ']',
-        family: bro.familystarted.toLowerCase(),
+        family: bro.familystarted.toLowerCase()
       }));
       var familyNode = familyToNode[lowerCaseFamily];
       edges.push({ from: familyNode.id, to: bro.id });
     } else if (!bro.big && !lowerCaseFamily) {
-      throw new Error('Encountered a little bro (' + bro.name + ') without a big bro.');
+      throw new Error('Encountered a little bro (' + bro.name + ') without a big bro. This is a data entry error.');
     } else if (lowerCaseFamily) {
       edges.push({ from: familyToNode[lowerCaseFamily].id, to: bro.id });
     } else {
@@ -149,8 +129,7 @@ function createNodes(brothers_) {
       var node = nameToNode[edge.from];
       if (!node) {
         var correctedName = didYouMeanWrapper(edge.from);
-        var msg = correctedName ? 'Did you mean ' + correctedName + '?' : 'No match for ' + edge.from;
-        throw new Error(msg);
+        throw new Error('Unable to find ' + edge.from + (correctedName ? ', did you mean ' + correctedName + '?' : ''));
       }
       edge.from = node.id;
     }
@@ -159,7 +138,7 @@ function createNodes(brothers_) {
   function getFamily(node) {
     node.family = node.family || node.familystarted;
     if (node.family) return node.family;
-    try { node.family = getFamily(node.big); } catch(e) { node.family = 'unknown'; }
+    try { node.family = getFamily(node.big); } catch (e) { node.family = 'unknown'; }
     return node.family;
   }
 
@@ -176,13 +155,11 @@ function createNodes(brothers_) {
 function createNodesHelper() {
   if (createNodesCalled) return;
   createNodesCalled = true;
-
   var output = createNodes(brothers);
   nodesGlobal = output[0];
   edgesGlobal = output[1];
   familyColorGlobal = output[2];
   pledgeClassColorGlobal = output[3];
-
   nodesDataSet = new vis.DataSet(nodesGlobal);
   edgesDataSet = new vis.DataSet(edgesGlobal);
 }
@@ -193,7 +170,6 @@ function findBrother(name, nodes, prevElem, direction) {
     return element.name.toLowerCase().includes(lowerCaseName);
   });
   if (matches.length === 0) return undefined;
-
   var increment = direction === DIRECTION.FORWARD ? 1 : -1;
   var idx = 0;
   if (prevElem) {
@@ -207,10 +183,8 @@ function findBrother(name, nodes, prevElem, direction) {
 function findBrotherHelper(name, direction) {
   if (!name) return true;
   if (!network) return false;
-
   var found = findBrother(name, nodesGlobal, previousSearchFind, direction);
   previousSearchFind = found;
-
   if (found) {
     network.focus(found.id, { scale: 0.9, animation: true });
     network.selectNodes([found.id]);
@@ -224,24 +198,26 @@ function draw() {
 
   var changeColor;
   var colorMethod = document.getElementById('layout').value;
-  switch(colorMethod) {
+  switch (colorMethod) {
     case 'active':
-      changeColor = function(node) {
+      changeColor = function (node) {
         node.color = (node.inactive || node.graduated) ? 'lightgrey' : 'lightblue';
         nodesDataSet.update(node);
-      }; break;
+      };
+      break;
     case 'pledgeClass':
-      changeColor = function(node) {
+      changeColor = function (node) {
         node.color = node.pledgeclass ? pledgeClassColorGlobal[node.pledgeclass.toLowerCase()] : 'lightgrey';
         nodesDataSet.update(node);
-      }; break;
-    default: // family
-      changeColor = function(node) {
+      };
+      break;
+    default:
+      changeColor = function (node) {
         node.color = familyColorGlobal[node.family.toLowerCase()];
         nodesDataSet.update(node);
-      }; break;
+      };
+      break;
   }
-
   nodesGlobal.forEach(changeColor);
 
   if (!network) {
@@ -260,19 +236,15 @@ function draw() {
       },
       layout: {
         hierarchical: {
-          direction: "UD", // top → down
+          direction: "UD",
           sortMethod: "directed",
-          nodeSpacing: 350,
-          levelSeparation: 150 // smaller = higher up
+          nodeSpacing: 200,
+          levelSeparation: 200,
+          parentCentralization: true,
+          edgeMinimization: true
         }
       },
-      physics: {
-        hierarchicalRepulsion: {
-          nodeDistance: 300,
-          springLength: 300
-        },
-        solver: "hierarchicalRepulsion"
-      }
+      physics: false
     };
 
     network = new vis.Network(container, data, options);
@@ -282,39 +254,35 @@ function draw() {
 }
 
 if (typeof document !== 'undefined') {
-  $(document).ready(function() {
+  $(document).ready(function () {
     draw();
 
     var dropdown = document.getElementById('layout');
-    dropdown.onchange = draw;
+    dropdown.onchange = function () { draw(); };
 
-    function hidePrevNextButtons() {
-      $('#prevsearch, #nextsearch').hide();
-    }
-    function showPrevNextButtons() {
-      $('#prevsearch, #nextsearch').show();
-    }
+    function hidePrevNextButtons() { $('#prevsearch').hide(); $('#nextsearch').hide(); }
+    function showPrevNextButtons() { $('#prevsearch').show(); $('#nextsearch').show(); }
 
     function search(direction) {
-      direction = direction !== DIRECTION.FORWARD && direction !== DIRECTION.BACKWARD ? DIRECTION.FORWARD : direction;
+      if (direction !== DIRECTION.FORWARD && direction !== DIRECTION.BACKWARD) {
+        direction = DIRECTION.FORWARD;
+      }
       var query = $('#searchbox').val();
       var success = findBrotherHelper(query, direction);
-      if(success) {
-        $('#searchbox').css('background-color','white');
-        query ? showPrevNextButtons() : hidePrevNextButtons();
+      if (success) {
+        $('#searchbox').css('background-color', 'white');
+        if (query !== '') showPrevNextButtons(); else hidePrevNextButtons();
       } else {
-        $('#searchbox').css('background-color','#EEC4C6');
+        $('#searchbox').css('background-color', '#EEC4C6');
         hidePrevNextButtons();
       }
     }
 
-    document.getElementById('searchbox').onkeypress = function(e){
-      e = e || window.event;
+    $('#searchbox').keypress(function (e) {
       var keyCode = e.keyCode || e.which;
-      if(keyCode === KEYCODE_ENTER && !e.shiftKey) search(DIRECTION.FORWARD);
-      if(keyCode === KEYCODE_ENTER && e.shiftKey) search(DIRECTION.BACKWARD);
-    };
-
+      if (keyCode === KEYCODE_ENTER && !e.shiftKey) search(DIRECTION.FORWARD);
+      if (keyCode === KEYCODE_ENTER && e.shiftKey) search(DIRECTION.BACKWARD);
+    });
     $('#searchbutton').click(search.bind(undefined, DIRECTION.FORWARD));
     $('#nextsearch').click(search.bind(undefined, DIRECTION.FORWARD));
     $('#prevsearch').click(search.bind(undefined, DIRECTION.BACKWARD));
