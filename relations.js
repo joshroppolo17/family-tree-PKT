@@ -15,7 +15,7 @@ var brothers = [
     "pledgeclass": "Fall 2024"
   },
   {
-    "name": "Jake Schwedinger",
+    "name": "Jake Schwendinger",
     "big": "Josh Roppolo",
     "pledgeclass": "Fall 2025"
   },
