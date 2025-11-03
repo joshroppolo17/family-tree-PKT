@@ -1,42 +1,50 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>Phi Kappa Tau Family Tree</title>
+  <meta charset="UTF-8">
+  <title>Phi Kappa Tau</title>
   <link rel="icon" type="image/ico" href="favicon.ico"/>
-  <!-- Responsive design on mobile -->
-  <meta content="width=device-width" name="viewport"/>
-
-  <script type="text/javascript" src="lib/didYouMean-1.2.1.min.js"></script>
-  <script type="text/javascript" src="lib/vis.min.js"></script>
-  <script type="text/javascript" src="lib/tinycolor.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="relations.js?v=2"></script>
-  <script type="text/javascript" src="main.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Libraries -->
   <link href="lib/vis.min.css" rel="stylesheet" type="text/css" />
   <link href="css/main.css" rel="stylesheet" type="text/css" />
+  <script src="lib/didYouMean-1.2.1.min.js"></script>
+  <script src="lib/vis.min.js"></script>
+  <script src="lib/tinycolor.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  
+  <!-- Your code -->
+  <script src="relations.js?v=2"></script>
+  <script src="main.js"></script>
 </head>
 
 <body>
-<h1>Phi Kappa Tau</h1>
-<p class="color-key"><span>Color-coding:</span>
-<select id="layout">
-  <option value="family">family</option>
-  <option value="pledgeClass">pledge class</option>
-  <option value="active">active vs. inactive</option>
-</select></p>
-<div>
-  <input type="text" id="searchbox" placeholder="Brother's name...">
-  <button id="searchbutton">Search</button>
-  <button id="prevsearch" style='display: none'><i class="arrow up"></i></button>
-  <button id="nextsearch" style='display: none'><i class="arrow down"></i></button>
-</div>
-<br/>
+  <h1>Phi Kappa Tau</h1>
 
-<div class="stretchy-wrapper">
-  <div id="network-container">
-    <div id="mynetwork"></div>
+  <p>Color-coding:
+    <select id="layout">
+      <option value="family">family</option>
+      <option value="pledgeClass">pledge class</option>
+      <option value="active">active vs. inactive</option>
+    </select>
+  </p>
+
+  <div>
+    <input type="text" id="searchbox" placeholder="Brother's name...">
+    <button id="searchbutton">Search</button>
+    <button id="prevsearch" style="display: none;">&#8593;</button>
+    <button id="nextsearch" style="display: none;">&#8595;</button>
   </div>
-</div>
-<p id="selection"></p>
+
+  <br/>
+
+  <div class="stretchy-wrapper">
+    <div id="network-container">
+      <div id="mynetwork"></div>
+    </div>
+  </div>
+
+  <p id="selection"></p>
 </body>
 </html>
