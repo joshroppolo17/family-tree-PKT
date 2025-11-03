@@ -19,7 +19,7 @@ body {
 /* === HEADER AND CONTROLS === */
 h1 {
   margin-top: 20px;
-  color: white !important; /* force white color */
+  color: #ffffff !important; /* FORCE white */
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
