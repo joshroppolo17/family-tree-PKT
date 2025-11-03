@@ -243,8 +243,8 @@ function draw() {
         hierarchical: {
           sortMethod: 'directed',
           direction: 'UD',       // top-down
-          levelSeparation: 250,  // vertical spacing between families
-          nodeSpacing: 500       // horizontal spacing between nodes
+          levelSeparation: 300,  // vertical spacing between families
+          nodeSpacing: 400       // horizontal spacing between nodes
         },
       },
       edges: {
