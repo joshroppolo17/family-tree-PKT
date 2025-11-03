@@ -1,6 +1,6 @@
 /* global vis, tinycolor, brothers, $, didYouMean */
 
-// Mock out dependencies for testing on NodeJS. These are imported in HTML.  
+// Mock out dependencies for testing on NodeJS. These are imported in the browser.
 /* eslint-disable */
 /* istanbul ignore else */
 if (typeof brothers === 'undefined') { brothers = require('./relations'); }
@@ -15,19 +15,15 @@ if (typeof didYouMean === 'undefined') { didYouMean = require('didyoumean'); }
 /* eslint-enable */
 
 var network = null;
-console.log("Loaded brothers:", brothers);
-
 var createNodesCalled = false;
 var nodesGlobal;
 var edgesGlobal;
 var nodesDataSet;
 var edgesDataSet;
-
 var previousSearchFind;
 
 var DIRECTION = { FORWARD: 0, BACKWARD: 1 };
 var KEYCODE_ENTER = 13;
-
 var familyColorGlobal = {};
 var pledgeClassColorGlobal = {};
 
@@ -52,14 +48,12 @@ var getNewPledgeClassColor = (function () {
 
 function didYouMeanWrapper(invalidName) {
   var allValidNames = brothers.map(function (bro) { return bro.name; });
-  var similarValidName = didYouMean(invalidName, allValidNames);
-  return similarValidName;
+  return didYouMean(invalidName, allValidNames);
 }
 
 function createNodes(brothers_) {
   var oldLength = brothers_.length;
   var newIdx = oldLength;
-
   var nodes = [];
   var edges = [];
   var familyColor = {};
@@ -69,11 +63,10 @@ function createNodes(brothers_) {
   for (var i = 0; i < oldLength; i++) {
     var bro = brothers_[i];
     bro.id = i;
-
     var lowerCaseFamily = (bro.familystarted || '').toLowerCase();
+
     if (lowerCaseFamily && !familyColor[lowerCaseFamily]) {
       familyColor[lowerCaseFamily] = getNewFamilyColor();
-
       var newNode = {
         id: newIdx++,
         name: lowerCaseFamily,
@@ -82,7 +75,6 @@ function createNodes(brothers_) {
         inactive: true,
         font: { size: 50 }
       };
-
       familyToNode[lowerCaseFamily] = newNode;
       nodes.push(newNode);
     }
@@ -95,11 +87,10 @@ function createNodes(brothers_) {
         label: '[' + bro.name + ']',
         family: bro.familystarted.toLowerCase()
       }));
-
       var familyNode = familyToNode[lowerCaseFamily];
       edges.push({ from: familyNode.id, to: bro.id });
     } else if (!bro.big && !lowerCaseFamily) {
-      throw new Error('Encountered a little bro (' + bro.name + ') without a big bro.');
+      throw new Error('Encountered a little bro (' + bro.name + ') without a big bro. This is a data entry error.');
     } else if (lowerCaseFamily) {
       edges.push({ from: familyToNode[lowerCaseFamily].id, to: bro.id });
     } else {
@@ -135,19 +126,10 @@ function createNodes(brothers_) {
 
   edges.forEach(function (edge) {
     if (typeof edge.from === 'string') {
-      var name = edge.from;
-      var node = nameToNode[name];
+      var node = nameToNode[edge.from];
       if (!node) {
-        var correctedName = didYouMeanWrapper(name);
-        var msg;
-        if (!correctedName) {
-          msg = 'Unable to find a match for ' + JSON.stringify(name);
-        } else if (name.trim() === correctedName.trim()) {
-          msg = 'Inconsistent whitespace. Expected to find ' + JSON.stringify(correctedName) + ', but actually found ' + JSON.stringify(name) + '. These should have consistent whitespace.';
-        } else {
-          msg = 'Unable to find ' + JSON.stringify(name) + ', did you mean ' + JSON.stringify(correctedName) + '?';
-        }
-        throw new Error(msg);
+        var correctedName = didYouMeanWrapper(edge.from);
+        throw new Error('Unable to find ' + edge.from + (correctedName ? ', did you mean ' + correctedName + '?' : ''));
       }
       edge.from = node.id;
     }
@@ -156,11 +138,7 @@ function createNodes(brothers_) {
   function getFamily(node) {
     node.family = node.family || node.familystarted;
     if (node.family) return node.family;
-    try {
-      node.family = getFamily(node.big);
-    } catch (e) {
-      node.family = 'unknown';
-    }
+    try { node.family = getFamily(node.big); } catch (e) { node.family = 'unknown'; }
     return node.family;
   }
 
@@ -177,22 +155,21 @@ function createNodes(brothers_) {
 function createNodesHelper() {
   if (createNodesCalled) return;
   createNodesCalled = true;
-
   var output = createNodes(brothers);
   nodesGlobal = output[0];
   edgesGlobal = output[1];
   familyColorGlobal = output[2];
   pledgeClassColorGlobal = output[3];
-
   nodesDataSet = new vis.DataSet(nodesGlobal);
   edgesDataSet = new vis.DataSet(edgesGlobal);
 }
 
 function findBrother(name, nodes, prevElem, direction) {
   var lowerCaseName = name.toLowerCase();
-  var matches = nodes.filter(function (element) { return element.name.toLowerCase().includes(lowerCaseName); });
+  var matches = nodes.filter(function (element) {
+    return element.name.toLowerCase().includes(lowerCaseName);
+  });
   if (matches.length === 0) return undefined;
-
   var increment = direction === DIRECTION.FORWARD ? 1 : -1;
   var idx = 0;
   if (prevElem) {
@@ -206,10 +183,8 @@ function findBrother(name, nodes, prevElem, direction) {
 function findBrotherHelper(name, direction) {
   if (!name) return true;
   if (!network) return false;
-
   var found = findBrother(name, nodesGlobal, previousSearchFind, direction);
   previousSearchFind = found;
-
   if (found) {
     network.focus(found.id, { scale: 0.9, animation: true });
     network.selectNodes([found.id]);
@@ -221,8 +196,8 @@ function findBrotherHelper(name, direction) {
 function draw() {
   createNodesHelper();
 
-  var colorMethod = document.getElementById('layout').value;
   var changeColor;
+  var colorMethod = document.getElementById('layout').value;
   switch (colorMethod) {
     case 'active':
       changeColor = function (node) {
@@ -250,11 +225,18 @@ function draw() {
     var data = { nodes: nodesDataSet, edges: edgesDataSet };
 
     var options = {
-      nodes: { shape: "ellipse", font: { size: 16, multi: true }, margin: 12 },
-      edges: { arrows: "to", smooth: false },
+      nodes: {
+        shape: "ellipse",
+        font: { size: 16, multi: true },
+        margin: 12
+      },
+      edges: {
+        arrows: "to",
+        smooth: false
+      },
       layout: {
         hierarchical: {
-          direction: "DU",
+          direction: "UD",
           sortMethod: "directed",
           nodeSpacing: 350,
           levelSeparation: 300
@@ -272,48 +254,34 @@ function draw() {
 if (typeof document !== 'undefined') {
   $(document).ready(function () {
     draw();
-
     var dropdown = document.getElementById('layout');
     dropdown.onchange = function () { draw(); };
 
-    function hidePrevNextButtons() {
-      $('#prevsearch').css('display', 'none');
-      $('#nextsearch').css('display', 'none');
-    }
-    function showPrevNextButtons() {
-      $('#prevsearch').css('display', 'inline');
-      $('#nextsearch').css('display', 'inline');
-    }
+    function hidePrevNextButtons() { $('#prevsearch').hide(); $('#nextsearch').hide(); }
+    function showPrevNextButtons() { $('#prevsearch').show(); $('#nextsearch').show(); }
+
     function search(direction) {
-      if (direction !== DIRECTION.FORWARD && direction !== DIRECTION.BACKWARD) {
-        console.warn('Unexpected direction value: ' + direction + ' (defaulting to FORWARD direction)');
-        direction = DIRECTION.FORWARD;
-      }
-      direction = direction || DIRECTION.FORWARD;
+      if (direction !== DIRECTION.FORWARD && direction !== DIRECTION.BACKWARD) { direction = DIRECTION.FORWARD; }
       var query = $('#searchbox').val();
       var success = findBrotherHelper(query, direction);
-
       if (success) {
         $('#searchbox').css('background-color', 'white');
-        if (query !== '') showPrevNextButtons();
-        else hidePrevNextButtons();
+        if (query !== '') showPrevNextButtons(); else hidePrevNextButtons();
       } else {
         $('#searchbox').css('background-color', '#EEC4C6');
         hidePrevNextButtons();
       }
     }
 
-    document.getElementById('searchbox').onkeypress = function (e) {
-      if (!e) e = window.event;
+    $('#searchbox').keypress(function (e) {
       var keyCode = e.keyCode || e.which;
-      if (typeof keyCode === 'string') keyCode = Number(keyCode);
       if (keyCode === KEYCODE_ENTER && !e.shiftKey) search(DIRECTION.FORWARD);
       if (keyCode === KEYCODE_ENTER && e.shiftKey) search(DIRECTION.BACKWARD);
-    };
+    });
 
-    document.getElementById('searchbutton').onclick = search.bind(undefined, DIRECTION.FORWARD);
-    document.getElementById('nextsearch').onclick = search.bind(undefined, DIRECTION.FORWARD);
-    document.getElementById('prevsearch').onclick = search.bind(undefined, DIRECTION.BACKWARD);
+    $('#searchbutton').click(search.bind(undefined, DIRECTION.FORWARD));
+    $('#nextsearch').click(search.bind(undefined, DIRECTION.FORWARD));
+    $('#prevsearch').click(search.bind(undefined, DIRECTION.BACKWARD));
   });
 }
 
