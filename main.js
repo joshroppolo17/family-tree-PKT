@@ -1,44 +1,33 @@
 /* global vis, tinycolor, brothers, $, didYouMean */
 
-// Mock out dependencies for testing on NodeJS. These are imported in HTML in
-// the browser.
+// Mock out dependencies for testing on NodeJS. These are imported in HTML.  
 /* eslint-disable */
 /* istanbul ignore else */
-if (typeof brothers === 'undefined') {
-  brothers = require('./relations');
-}
+if (typeof brothers === 'undefined') { brothers = require('./relations'); }
 /* istanbul ignore else */
-if (typeof tinycolor === 'undefined') {
-  tinycolor = require('tinycolor2');
-}
+if (typeof tinycolor === 'undefined') { tinycolor = require('tinycolor2'); }
 /* istanbul ignore else */
-if (typeof $ === 'undefined') {
-  $ = require('jquery');
-}
+if (typeof $ === 'undefined') { $ = require('jquery'); }
 /* istanbul ignore else */
-if (typeof vis === 'undefined') {
-  vis = require('vis');
-}
+if (typeof vis === 'undefined') { vis = require('vis'); }
 /* istanbul ignore else */
-if (typeof didYouMean === 'undefined') {
-  didYouMean = require('didyoumean');
-}
+if (typeof didYouMean === 'undefined') { didYouMean = require('didyoumean'); }
 /* eslint-enable */
 
 var network = null;
+console.log("Loaded brothers:", brothers);
+
 var createNodesCalled = false;
 var nodesGlobal;
 var edgesGlobal;
 var nodesDataSet;
 var edgesDataSet;
+
 var previousSearchFind;
 
-var DIRECTION = {
-  FORWARD: 0,
-  BACKWARD: 1,
-};
-
+var DIRECTION = { FORWARD: 0, BACKWARD: 1 };
 var KEYCODE_ENTER = 13;
+
 var familyColorGlobal = {};
 var pledgeClassColorGlobal = {};
 
@@ -53,16 +42,12 @@ ColorSpinner.prototype.spin = function () {
 
 var getNewFamilyColor = (function () {
   var spinner1 = new ColorSpinner({ h: 0, s: 0.6, v: 0.9 }, 77);
-  return function () {
-    return spinner1.spin();
-  };
+  return function () { return spinner1.spin(); };
 }());
 
 var getNewPledgeClassColor = (function () {
   var spinner2 = new ColorSpinner({ h: 0, s: 0.4, v: 0.9 }, 23);
-  return function () {
-    return spinner2.spin();
-  };
+  return function () { return spinner2.spin(); };
 }());
 
 function didYouMeanWrapper(invalidName) {
@@ -74,6 +59,7 @@ function didYouMeanWrapper(invalidName) {
 function createNodes(brothers_) {
   var oldLength = brothers_.length;
   var newIdx = oldLength;
+
   var nodes = [];
   var edges = [];
   var familyColor = {};
@@ -83,18 +69,20 @@ function createNodes(brothers_) {
   for (var i = 0; i < oldLength; i++) {
     var bro = brothers_[i];
     bro.id = i;
-    var lowerCaseFamily = (bro.familystarted || '').toLowerCase();
 
+    var lowerCaseFamily = (bro.familystarted || '').toLowerCase();
     if (lowerCaseFamily && !familyColor[lowerCaseFamily]) {
       familyColor[lowerCaseFamily] = getNewFamilyColor();
+
       var newNode = {
         id: newIdx++,
         name: lowerCaseFamily,
         label: bro.familystarted,
         family: lowerCaseFamily,
         inactive: true,
-        font: { size: 50 },
+        font: { size: 50 }
       };
+
       familyToNode[lowerCaseFamily] = newNode;
       nodes.push(newNode);
     }
@@ -105,8 +93,9 @@ function createNodes(brothers_) {
         id: newIdx++,
         name: '',
         label: '[' + bro.name + ']',
-        family: bro.familystarted.toLowerCase(),
+        family: bro.familystarted.toLowerCase()
       }));
+
       var familyNode = familyToNode[lowerCaseFamily];
       edges.push({ from: familyNode.id, to: bro.id });
     } else if (!bro.big && !lowerCaseFamily) {
@@ -146,10 +135,18 @@ function createNodes(brothers_) {
 
   edges.forEach(function (edge) {
     if (typeof edge.from === 'string') {
-      var node = nameToNode[edge.from];
+      var name = edge.from;
+      var node = nameToNode[name];
       if (!node) {
-        var correctedName = didYouMeanWrapper(edge.from);
-        var msg = correctedName ? 'Did you mean ' + correctedName + '?' : 'No match for ' + edge.from;
+        var correctedName = didYouMeanWrapper(name);
+        var msg;
+        if (!correctedName) {
+          msg = 'Unable to find a match for ' + JSON.stringify(name);
+        } else if (name.trim() === correctedName.trim()) {
+          msg = 'Inconsistent whitespace. Expected to find ' + JSON.stringify(correctedName) + ', but actually found ' + JSON.stringify(name) + '. These should have consistent whitespace.';
+        } else {
+          msg = 'Unable to find ' + JSON.stringify(name) + ', did you mean ' + JSON.stringify(correctedName) + '?';
+        }
         throw new Error(msg);
       }
       edge.from = node.id;
@@ -159,7 +156,11 @@ function createNodes(brothers_) {
   function getFamily(node) {
     node.family = node.family || node.familystarted;
     if (node.family) return node.family;
-    try { node.family = getFamily(node.big); } catch(e) { node.family = 'unknown'; }
+    try {
+      node.family = getFamily(node.big);
+    } catch (e) {
+      node.family = 'unknown';
+    }
     return node.family;
   }
 
@@ -189,9 +190,7 @@ function createNodesHelper() {
 
 function findBrother(name, nodes, prevElem, direction) {
   var lowerCaseName = name.toLowerCase();
-  var matches = nodes.filter(function (element) {
-    return element.name.toLowerCase().includes(lowerCaseName);
-  });
+  var matches = nodes.filter(function (element) { return element.name.toLowerCase().includes(lowerCaseName); });
   if (matches.length === 0) return undefined;
 
   var increment = direction === DIRECTION.FORWARD ? 1 : -1;
@@ -222,26 +221,28 @@ function findBrotherHelper(name, direction) {
 function draw() {
   createNodesHelper();
 
-  var changeColor;
   var colorMethod = document.getElementById('layout').value;
-  switch(colorMethod) {
+  var changeColor;
+  switch (colorMethod) {
     case 'active':
-      changeColor = function(node) {
+      changeColor = function (node) {
         node.color = (node.inactive || node.graduated) ? 'lightgrey' : 'lightblue';
         nodesDataSet.update(node);
-      }; break;
+      };
+      break;
     case 'pledgeClass':
-      changeColor = function(node) {
+      changeColor = function (node) {
         node.color = node.pledgeclass ? pledgeClassColorGlobal[node.pledgeclass.toLowerCase()] : 'lightgrey';
         nodesDataSet.update(node);
-      }; break;
-    default: // family
-      changeColor = function(node) {
+      };
+      break;
+    default:
+      changeColor = function (node) {
         node.color = familyColorGlobal[node.family.toLowerCase()];
         nodesDataSet.update(node);
-      }; break;
+      };
+      break;
   }
-
   nodesGlobal.forEach(changeColor);
 
   if (!network) {
@@ -249,30 +250,17 @@ function draw() {
     var data = { nodes: nodesDataSet, edges: edgesDataSet };
 
     var options = {
-      nodes: {
-        shape: "ellipse",
-        font: { size: 16, multi: true },
-        margin: 12
-      },
-      edges: {
-        arrows: "to",
-        smooth: false
-      },
+      nodes: { shape: "ellipse", font: { size: 16, multi: true }, margin: 12 },
+      edges: { arrows: "to", smooth: false },
       layout: {
         hierarchical: {
-          direction: "UD", // top → down
+          direction: "DU",
           sortMethod: "directed",
           nodeSpacing: 350,
-          levelSeparation: 150 // smaller = higher up
+          levelSeparation: 300
         }
       },
-      physics: {
-        hierarchicalRepulsion: {
-          nodeDistance: 300,
-          springLength: 300
-        },
-        solver: "hierarchicalRepulsion"
-      }
+      physics: { hierarchicalRepulsion: { nodeDistance: 300, springLength: 300 }, solver: "hierarchicalRepulsion" }
     };
 
     network = new vis.Network(container, data, options);
@@ -282,42 +270,50 @@ function draw() {
 }
 
 if (typeof document !== 'undefined') {
-  $(document).ready(function() {
+  $(document).ready(function () {
     draw();
 
     var dropdown = document.getElementById('layout');
-    dropdown.onchange = draw;
+    dropdown.onchange = function () { draw(); };
 
     function hidePrevNextButtons() {
-      $('#prevsearch, #nextsearch').hide();
+      $('#prevsearch').css('display', 'none');
+      $('#nextsearch').css('display', 'none');
     }
     function showPrevNextButtons() {
-      $('#prevsearch, #nextsearch').show();
+      $('#prevsearch').css('display', 'inline');
+      $('#nextsearch').css('display', 'inline');
     }
-
     function search(direction) {
-      direction = direction !== DIRECTION.FORWARD && direction !== DIRECTION.BACKWARD ? DIRECTION.FORWARD : direction;
+      if (direction !== DIRECTION.FORWARD && direction !== DIRECTION.BACKWARD) {
+        console.warn('Unexpected direction value: ' + direction + ' (defaulting to FORWARD direction)');
+        direction = DIRECTION.FORWARD;
+      }
+      direction = direction || DIRECTION.FORWARD;
       var query = $('#searchbox').val();
       var success = findBrotherHelper(query, direction);
-      if(success) {
-        $('#searchbox').css('background-color','white');
-        query ? showPrevNextButtons() : hidePrevNextButtons();
+
+      if (success) {
+        $('#searchbox').css('background-color', 'white');
+        if (query !== '') showPrevNextButtons();
+        else hidePrevNextButtons();
       } else {
-        $('#searchbox').css('background-color','#EEC4C6');
+        $('#searchbox').css('background-color', '#EEC4C6');
         hidePrevNextButtons();
       }
     }
 
-    document.getElementById('searchbox').onkeypress = function(e){
-      e = e || window.event;
+    document.getElementById('searchbox').onkeypress = function (e) {
+      if (!e) e = window.event;
       var keyCode = e.keyCode || e.which;
-      if(keyCode === KEYCODE_ENTER && !e.shiftKey) search(DIRECTION.FORWARD);
-      if(keyCode === KEYCODE_ENTER && e.shiftKey) search(DIRECTION.BACKWARD);
+      if (typeof keyCode === 'string') keyCode = Number(keyCode);
+      if (keyCode === KEYCODE_ENTER && !e.shiftKey) search(DIRECTION.FORWARD);
+      if (keyCode === KEYCODE_ENTER && e.shiftKey) search(DIRECTION.BACKWARD);
     };
 
-    $('#searchbutton').click(search.bind(undefined, DIRECTION.FORWARD));
-    $('#nextsearch').click(search.bind(undefined, DIRECTION.FORWARD));
-    $('#prevsearch').click(search.bind(undefined, DIRECTION.BACKWARD));
+    document.getElementById('searchbutton').onclick = search.bind(undefined, DIRECTION.FORWARD);
+    document.getElementById('nextsearch').onclick = search.bind(undefined, DIRECTION.FORWARD);
+    document.getElementById('prevsearch').onclick = search.bind(undefined, DIRECTION.BACKWARD);
   });
 }
 
