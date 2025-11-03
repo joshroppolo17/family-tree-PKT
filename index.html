@@ -1,23 +1,24 @@
 <!doctype html>
 <html>
 <head>
-  <title>Phi Kappa Tau</title>
+  <title>Phi Kappa Tau Family Tree</title>
   <link rel="icon" type="image/ico" href="favicon.ico"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!-- Responsive design on mobile -->
+  <meta content="width=device-width" name="viewport"/>
 
   <!-- Libraries -->
-  <script src="lib/didYouMean-1.2.1.min.js"></script>
-  <script src="lib/vis.min.js"></script>
-  <script src="lib/tinycolor.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="lib/didYouMean-1.2.1.min.js"></script>
+  <script type="text/javascript" src="lib/vis.min.js"></script>
+  <script type="text/javascript" src="lib/tinycolor.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
   <!-- Your scripts -->
-  <script src="relations.js"></script>
-  <script src="main.js"></script>
+  <script type="text/javascript" src="relations.js?v=2"></script>
+  <script type="text/javascript" src="main.js"></script>
 
   <!-- Styles -->
-  <link href="lib/vis.min.css" rel="stylesheet"/>
-  <link href="css/main.css" rel="stylesheet"/>
+  <link href="lib/vis.min.css" rel="stylesheet" type="text/css" />
+  <link href="css/main.css" rel="stylesheet" type="text/css" />
 
   <style>
     body {
@@ -28,28 +29,25 @@
 
     h1 {
       text-align: center;
+      color: #b30000; /* red for header */
     }
 
-    #color-coding-box {
-      background-color: #fff3b0;
-      padding: 10px 15px;
-      border: 2px solid #f1c40f;
-      border-radius: 8px;
-      display: inline-block;
-      margin-bottom: 20px;
-      font-size: 16px;
-      color: #c0392b; /* red font for label */
+    /* Color-coding label */
+    .color-key span {
+      font-weight: 700;
+      color: #b30000; /* deep red */
+      background-color: #ffd700; /* gold highlight */
+      padding: 4px 8px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      letter-spacing: 0.5px;
     }
 
-    #color-coding-box label {
-      margin-right: 10px;
-      font-weight: bold;
-    }
-
-    #color-coding-box select {
-      padding: 5px 8px;
+    .color-key select {
+      padding: 4px 8px;
       font-size: 16px;
       border-radius: 5px;
+      margin-left: 8px;
     }
 
     #search-container {
@@ -70,9 +68,8 @@
     .stretchy-wrapper {
       width: 100%;
       height: 600px; /* adjust height as needed */
-      border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: transparent; /* white-ish box */
+      background-color: transparent; /* make the box transparent */
       padding: 10px;
       box-sizing: border-box;
     }
@@ -97,20 +94,19 @@
 <body>
   <h1>Phi Kappa Tau</h1>
 
-  <div id="color-coding-box">
-    <label for="layout">Color Coding:</label>
+  <p class="color-key"><span>Color-coding:</span>
     <select id="layout">
-      <option value="family">Family</option>
-      <option value="pledgeClass">Pledge Class</option>
-      <option value="active">Active / Inactive</option>
+      <option value="family">family</option>
+      <option value="pledgeClass">pledge class</option>
+      <option value="active">active vs. inactive</option>
     </select>
-  </div>
+  </p>
 
   <div id="search-container">
     <input type="text" id="searchbox" placeholder="Brother's name...">
     <button id="searchbutton">Search</button>
-    <button id="prevsearch" style="display: none"><i class="arrow up"></i></button>
-    <button id="nextsearch" style="display: none"><i class="arrow down"></i></button>
+    <button id="prevsearch" style='display: none'><i class="arrow up"></i></button>
+    <button id="nextsearch" style='display: none'><i class="arrow down"></i></button>
   </div>
 
   <div class="stretchy-wrapper">
